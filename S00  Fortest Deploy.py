@@ -33,4 +33,5 @@ payload = {
 resp = requests.post(url, json=payload, headers=headers, timeout=30)
 
 print("status_code =", resp.status_code)
+print("status_code =", resp.status_code)
 print(resp.text)
