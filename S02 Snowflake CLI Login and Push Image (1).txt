@@ -1,0 +1,121 @@
+:: =============================================================================
+:: Step: Check Snowflake CLI installation
+:: Purpose:
+::   Verify whether Snowflake CLI is installed on this machine before logging in
+::   to the Snowflake Image Registry.
+::
+:: ใช้ทำอะไร:
+::   ใช้ตรวจสอบว่าเครื่องนี้มี Snowflake CLI แล้วหรือยัง
+::   เพราะเราจะใช้ snow spcs image-registry login เพื่อ login Docker เข้า registry
+:: =============================================================================
+
+snow --version
+
+
+:: =============================================================================
+:: Step: Install Snowflake CLI using WinGet
+:: Purpose:
+::   Install Snowflake CLI on Windows without manually downloading MSI files.
+::
+:: ใช้ทำอะไร:
+::   ใช้ติดตั้ง Snowflake CLI บน Windows ผ่าน WinGet
+::   เพื่อใช้คำสั่ง snow สำหรับ login เข้า Snowflake Image Registry
+:: =============================================================================
+
+winget install Snowflake.SnowflakeCLI
+
+:: =============================================================================
+:: Step: List Snowflake CLI connection profiles
+:: Purpose:
+::   Check whether this machine already has a Snowflake CLI connection profile.
+::
+:: ใช้ทำอะไร:
+::   ใช้ตรวจสอบว่ามี Snowflake connection profile อยู่แล้วหรือไม่
+::   ถ้ามี เราจะใช้ profile นั้น login เข้า image registry
+:: =============================================================================
+
+snow connection list
+
+
+:: =============================================================================
+:: Step: Add Snowflake CLI connection profile for LK77308
+:: Purpose:
+::   Create a Snowflake CLI connection profile for the LK77308 account.
+::
+:: ใช้ทำอะไร:
+::   ใช้สร้าง profile ชื่อ LK77308 เพื่อให้ Snowflake CLI ใช้เชื่อมต่อ
+::   account ที่มี Image Repository สำหรับ Tableau MCP
+::
+:: Notes:
+::   Snowflake CLI v3 ใช้ --connection-name ไม่ใช่ใส่ชื่อ profile ต่อท้าย command
+:: =============================================================================
+
+snow connection add --connection-name LK77308
+
+
+:: =============================================================================
+:: Step: Test Snowflake CLI connection for LK77308
+:: Purpose:
+::   Verify that the Snowflake CLI can connect to the LK77308 Snowflake account
+::   using the newly created connection profile.
+::
+:: ใช้ทำอะไร:
+::   ใช้ทดสอบว่า profile LK77308 ต่อเข้า Snowflake ได้จริง
+::   ก่อนใช้ login เข้า Snowflake Image Registry เพื่อ push Docker image
+::
+:: Connection:
+::   LK77308
+:: =============================================================================
+
+snow connection test --connection LK77308
+
+-- Snowflake account: bflszia-lk77308
+-- Snowflake username: APHISIT
+-- Snowflake password: R8m@X2q!Lz9Tn#
+-- Role: ACCOUNTADMIN
+-- Warehouse: COMPUTE_WH
+-- Database: AGENT_AI
+-- Schema: AGENT_101
+-- Authenticator: OAUTH_AUTHORIZATION_CODE
+
+
+:: =============================================================================
+:: Step: Login Docker to Snowflake Image Registry
+:: Purpose:
+::   Authenticate Docker with the Snowflake account image registry using the
+::   Snowflake CLI connection profile.
+::
+:: ใช้ทำอะไร:
+::   ใช้ login Docker เข้า Snowflake Image Registry
+::   เพื่อให้สามารถ push Docker image ไปยัง Snowflake Image Repository ได้
+::
+:: Connection:
+::   LK77308
+::
+:: Notes:
+::   This command must be executed with a role that can view at least one
+::   image repository in the Snowflake account registry.
+:: =============================================================================
+
+snow spcs image-registry login --connection LK77308
+
+:: =============================================================================
+:: Step: Push Tableau MCP Docker image to Snowflake Image Repository
+:: Purpose:
+::   Upload the tagged Tableau MCP Docker image from local Docker Desktop to
+::   Snowflake Image Repository so it can be used by Snowpark Container Services.
+::
+:: ใช้ทำอะไร:
+::   ใช้ส่ง Docker image ของ Tableau MCP เข้า Snowflake Image Repository
+::   เพื่อเตรียม deploy เป็น Snowpark Container Services
+::
+:: Prerequisites:
+::   - Docker Desktop is running
+::   - snow spcs image-registry login succeeded
+::   - Local image has already been tagged with Snowflake registry URL
+::
+:: Target Image:
+::   bflszia-lk77308.registry.snowflakecomputing.com/agent_ai/agent_101/tableau_mcp_repo/tableau-mcp:latest
+:: =============================================================================
+
+docker push bflszia-lk77308.registry.snowflakecomputing.com/agent_ai/agent_101/tableau_mcp_repo/tableau-mcp:latest
