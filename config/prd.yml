@@ -1,0 +1,11 @@
+env: prd
+
+snowflake:
+  account: BFLSZIA.LK77308
+  user: APHISIT
+  role: PRD_ROLE
+
+database: DEMO_PRD
+schema: RAW
+warehouse: PRD_WH
+stage: PRD_STAGE

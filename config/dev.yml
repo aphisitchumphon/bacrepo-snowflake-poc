@@ -1,0 +1,11 @@
+env: dev
+
+snowflake:
+  account: BFLSZIA.LK77308
+  user: APHISIT
+  role: DEV_ROLE
+
+database: DEMO_DEV
+schema: RAW
+warehouse: DEV_WH
+stage: DEV_STAGE
