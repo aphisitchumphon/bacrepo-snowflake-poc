@@ -1,0 +1,70 @@
+สรุปสิ่งที่ทำทั้งหมด
+
+1. เตรียม Tableau MCP Server
+- เตรียม source code / Dockerfile ของ Tableau MCP
+- ตั้งค่าให้ Tableau MCP เชื่อมต่อ Tableau ได้
+
+2. Build และ Push Docker Image
+- Build Docker image ของ Tableau MCP สำเร็จ
+- Push image เข้า Snowflake Image Repository สำเร็จ
+
+3. เตรียม Snowpark Container Services
+- สร้าง Compute Pool สำเร็จ
+- สร้าง Network Rule สำเร็จ
+- สร้าง External Access Integration สำเร็จ
+
+4. Deploy Tableau MCP เป็น SPCS Service
+- Deploy Tableau MCP ขึ้น Snowpark Container Services สำเร็จ
+- Service อยู่สถานะ RUNNING
+
+Service:
+AGENT_AI.AGENT_101.TABLEAU_MCP_SERVICE
+
+Public Endpoint:
+https://iardjc-bflszia-lk77308.snowflakecomputing.app/tableau-mcp
+
+5. ตรวจสอบ Endpoint ของ Service
+- รัน SHOW ENDPOINTS IN SERVICE TABLEAU_MCP_SERVICE
+- เจอ endpoint name คือ tableau-mcp
+- path คือ /tableau-mcp
+
+6. Register SPCS Service เป็น Custom MCP Server
+- ใช้ CREATE CUSTOM MCP SERVER เพื่อ register Tableau MCP service เป็น MCP Server
+
+Custom MCP Server:
+AGENT_AI.AGENT_101.TABLEAU_CUSTOM_MCP_SERVER
+
+7. ตรวจสอบ Custom MCP Server
+- รัน SHOW CUSTOM MCP SERVERS
+- รัน DESC CUSTOM MCP SERVER TABLEAU_CUSTOM_MCP_SERVER
+- Confirm แล้วว่า Custom MCP Server ชี้ไปที่ service, endpoint, และ path ถูกต้อง
+
+8. Grant สิทธิ์
+- Grant USAGE บน Custom MCP Server สำเร็จ
+- Grant Service Role ของ SPCS service สำเร็จ
+
+Service Role ที่ใช้:
+TABLEAU_MCP_SERVICE!ALL_ENDPOINTS_USAGE
+
+9. สร้าง Agent ผ่าน Snowflake UI
+- สร้าง Agent ชื่อ TEST_101
+
+10. Add MCP Connector เข้า Agent
+- เข้า Agent TEST_101
+- ไปที่ tab MCP Connectors
+- เลือก TABLEAU_CUSTOM_MCP_SERVER
+- กด Add to agent
+- กด Save สำเร็จ
+
+สถานะล่าสุด:
+- Tableau MCP รันบน Snowpark Container Services สำเร็จ
+- Register เป็น Custom MCP Server สำเร็จ
+- Grant สิทธิ์ครบ
+- Agent TEST_101 เห็น TABLEAU_CUSTOM_MCP_SERVER แล้ว
+- Add MCP Connector เข้า Agent สำเร็จ
+
+ขั้นตอนถัดไป:
+- ทดสอบใน Agent chat ว่าเรียก Tableau MCP tools ได้จริง
+- ตัวอย่างคำถาม:
+  What Tableau tools are available?
+  List Tableau datasources.
