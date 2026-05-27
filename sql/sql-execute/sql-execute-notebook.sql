@@ -34,8 +34,9 @@ CREATE OR REPLACE NOTEBOOK DEMO_PRD.GOLD.RAW_TO_SILVER
 
 -- แต่ไม่ต้อง CREATE ใหม่ทุกครั้ง
 -- CREATE ครั้งเดียวพอครับ หลังจากนั้นแค่:
-sql-- Fetch sync จาก Git
+-- Fetch ทีเดียว — sync โค้ดล่าสุดจาก Git
 ALTER GIT REPOSITORY SANDBOX_DB.SECURITY.SNOWFLAKE_GIT_REPO FETCH;
 
--- Execute ได้เลย (โค้ดล่าสุดจาก Git อัตโนมัติ)
-EXECUTE NOTEBOOK DEMO_DEV.RAW.RAW_TO_SILVER();
+-- รัน DEV และ PRD ใช้โค้ดชุดเดียวกันเลย
+EXECUTE NOTEBOOK DEMO_DEV.GOLD.S01_RAW_TO_SILVER();
+EXECUTE NOTEBOOK DEMO_PRD.GOLD.S01_RAW_TO_SILVER();
