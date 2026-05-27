@@ -1,0 +1,47 @@
+-- 1. ใช้ role
+USE ROLE ACCOUNTADMIN;
+
+-- 2. เลือก database + schema ก่อน
+USE DATABASE AGENT_AI;
+USE SCHEMA GIT;
+
+-- 3. สร้าง API integration (ถ้ายังไม่เคยสร้าง)
+CREATE OR REPLACE API INTEGRATION git_api
+  API_PROVIDER = git_https_api
+  API_ALLOWED_PREFIXES = ('https://github.com/aphisitchumphon')
+  ENABLED = TRUE;
+
+-- 4. สร้าง Git repo
+CREATE OR REPLACE GIT REPOSITORY my_repo
+  API_INTEGRATION = git_api
+  ORIGIN = 'https://github.com/aphisitchumphon/bacrepo-snowflake-poc.git';
+
+
+ALTER GIT REPOSITORY my_repo FETCH;
+LS @my_repo/branches/main;
+
+
+USE ROLE ACCOUNTADMIN;
+USE DATABASE AGENT_AI;
+USE SCHEMA GIT;
+
+CREATE OR REPLACE SECRET github_pat_secret
+TYPE = PASSWORD
+USERNAME = 'aphisitchumphon'
+PASSWORD = 'github_pat_xxx';
+
+
+CREATE OR REPLACE API INTEGRATION GIT_API
+API_PROVIDER = git_https_api
+API_ALLOWED_PREFIXES = ('https://github.com/aphisitchumphon/')
+ALLOWED_AUTHENTICATION_SECRETS = (github_pat_secret)
+ENABLED = TRUE;
+
+
+USE ROLE ACCOUNTADMIN;
+
+GRANT USAGE ON DATABASE AGENT_AI TO ROLE ACCOUNTADMIN;
+GRANT USAGE ON SCHEMA AGENT_AI.GIT TO ROLE ACCOUNTADMIN;
+GRANT READ ON SECRET AGENT_AI.GIT.GITHUB_PAT_SECRET TO ROLE ACCOUNTADMIN;
+
+SHOW SECRETS LIKE 'GITHUB_PAT_SECRET' IN SCHEMA AGENT_AI.GIT;
