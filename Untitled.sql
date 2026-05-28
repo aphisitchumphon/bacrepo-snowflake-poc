@@ -1,11 +1,15 @@
--- 1. Sync โค้ดล่าสุดจาก Git
+-- Sync code ล่าสุดจาก Git
 ALTER GIT REPOSITORY SANDBOX_DB.SECURITY.SNOWFLAKE_GIT_REPO FETCH;
 
--- 2. Commit Live Version ก่อน แล้ว Publish ใหม่จาก LAST
-ALTER NOTEBOOK DEMO_DEV.GOLD.RAW_TO_SILVER COMMIT;
+-- Recreate notebook จาก Git source ล่าสุด
+CREATE OR REPLACE NOTEBOOK DEMO_DEV.GOLD.RAW_TO_SILVER
+    FROM '@SANDBOX_DB.SECURITY.SNOWFLAKE_GIT_REPO/branches/main/notebook/'
+    MAIN_FILE = 'S01 - Raw to Silver.ipynb'
+    QUERY_WAREHOUSE = DEV_WH;
+
 ALTER NOTEBOOK DEMO_DEV.GOLD.RAW_TO_SILVER ADD LIVE VERSION FROM LAST;
 
--- 3. รัน
+-- Execute
 EXECUTE NOTEBOOK DEMO_DEV.GOLD.RAW_TO_SILVER();
 
 -- ดูว่า Live Version ที่รันอยู่ มาจาก commit ไหน
