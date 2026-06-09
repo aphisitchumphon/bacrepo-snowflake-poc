@@ -2,7 +2,7 @@ USE ROLE SYSADMIN;
 
 -- Step 1: สร้าง NPO
 CREATE OR REPLACE NOTEBOOK PROJECT DEMO_DEV.NOTEBOOK.S01_RAW_TO_SILVER_PROJ
-  FROM 'snow://workspace/USER$.PUBLIC."bacrepo-snowflake-poc"/versions/head'
+  FROM 'snow://workspace/USER$.PUBLIC."bacrepo-snowflake-poc"/versions/head' --last snapshot ล่าสุดที่ publish/deploy แล้ว
   COMMENT = 'S01 Raw to Silver - DEV';
 
 -- Step 2: รัน
